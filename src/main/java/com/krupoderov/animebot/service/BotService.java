@@ -43,41 +43,44 @@ public class BotService extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
-
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chatId);
-            sendMessage.setText("Test");
-            // Create ReplyKeyboardMarkup object
-            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-            // Create the keyboard (list of keyboard rows)
-            List<KeyboardRow> keyboard = new ArrayList<>();
-            // Create a keyboard row
-            KeyboardRow row = new KeyboardRow();
-            // Set each button, you can also use KeyboardButton objects if you need something else than text
-            row.add("/start");
-
-            // Add the first row to the keyboard
-            keyboard.add(row);
-//            // Create another keyboard row
-//            row = new KeyboardRow();
-//            // Set each button for the second line
-//            row.add("Row 2 Button 1");
-//            row.add("Row 2 Button 2");
-//            row.add("Row 2 Button 3");
-            // Add the second row to the keyboard
+//
+//            SendMessage sendMessage = new SendMessage();
+//            sendMessage.setChatId(chatId);
+//            sendMessage.setText("Test");
+//            // Create ReplyKeyboardMarkup object
+//            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+//            // Create the keyboard (list of keyboard rows)
+//            List<KeyboardRow> keyboard = new ArrayList<>();
+//            // Create a keyboard row
+//            KeyboardRow row = new KeyboardRow();
+//            // Set each button, you can also use KeyboardButton objects if you need something else than text
+//            row.add("/start");
+//
+//            // Add the first row to the keyboard
 //            keyboard.add(row);
-            // Set the keyboard to the markup
-            keyboardMarkup.setKeyboard(keyboard);
-            // Add it to the message
-            sendMessage.setReplyMarkup(keyboardMarkup);
-            try {
-                execute(sendMessage); // Sending our message object to user
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+////            // Create another keyboard row
+////            row = new KeyboardRow();
+////            // Set each button for the second line
+////            row.add("Row 2 Button 1");
+////            row.add("Row 2 Button 2");
+////            row.add("Row 2 Button 3");
+//            // Add the second row to the keyboard
+////            keyboard.add(row);
+//            // Set the keyboard to the markup
+//            keyboardMarkup.setKeyboard(keyboard);
+//            // Add it to the message
+//            sendMessage.setReplyMarkup(keyboardMarkup);
+//            try {
+//                execute(sendMessage); // Sending our message object to user
+//            } catch (TelegramApiException e) {
+//                e.printStackTrace();
+//            }
 
             /*****************************************************************/
-            if (update.getMessage().getText().equals("/start")) {
+            if (update.getMessage().getText().equals("/start") ||
+                    update.getMessage().getText().equals("start") ||
+                    update.getMessage().getText().equals("Хочу картинку")
+            ) {
 
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(chatId);
@@ -376,6 +379,246 @@ public class BotService extends TelegramLongPollingBot {
                 blowjob.setCallbackData("nsfw_blowjob");
 
                 rowInline.add(blowjob);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_waifu")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw", "waifu").getUrl();
+                message.setText("[Одетая вайфу](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_waifu = new InlineKeyboardButton();
+
+                sfw_waifu.setText("Хочу еще");
+                sfw_waifu.setCallbackData("sfw_waifu");
+
+                rowInline.add(sfw_waifu);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_neko")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw","neko").getUrl();
+                message.setText("[Одетая кошкодевочка](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_neko = new InlineKeyboardButton();
+
+                sfw_neko.setText("Хочу еще");
+                sfw_neko.setCallbackData("sfw_neko");
+
+                rowInline.add(sfw_neko);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_shinobu")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw","shinobu").getUrl();
+                message.setText("[Синобутян](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_shinobu = new InlineKeyboardButton();
+
+                sfw_shinobu.setText("Хочу еще");
+                sfw_shinobu.setCallbackData("sfw_shinobu");
+
+                rowInline.add(sfw_shinobu);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_megumin")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw","megumin").getUrl();
+                message.setText("[Мегумин](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_megumin = new InlineKeyboardButton();
+
+                sfw_megumin.setText("Хочу еще");
+                sfw_megumin.setCallbackData("sfw_megumin");
+
+                rowInline.add(sfw_megumin);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_bully")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw","bully").getUrl();
+                message.setText("[Буллинг](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_bully = new InlineKeyboardButton();
+
+                sfw_bully.setText("Хочу еще");
+                sfw_bully.setCallbackData("sfw_bully");
+
+                rowInline.add(sfw_bully);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_cuddle")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw","cuddle").getUrl();
+                message.setText("[:3](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_cuddle = new InlineKeyboardButton();
+
+                sfw_cuddle.setText("Хочу еще");
+                sfw_cuddle.setCallbackData("sfw_cuddle");
+
+                rowInline.add(sfw_cuddle);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_cry")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw","cry").getUrl();
+                message.setText("[:(](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_cry = new InlineKeyboardButton();
+
+                sfw_cry.setText("Хочу еще");
+                sfw_cry.setCallbackData("sfw_cry");
+
+                rowInline.add(sfw_cry);
+
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (call_data.equals("sfw_hug")) {
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                message.setParseMode(ParseMode.MARKDOWN);
+                String url = parseService.getImage("sfw","hug").getUrl();
+                message.setText("[Обнимашки:3](" + url + ")");
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sfw_hug = new InlineKeyboardButton();
+
+                sfw_hug.setText("Хочу еще");
+                sfw_hug.setCallbackData("sfw_hug");
+
+                rowInline.add(sfw_hug);
 
                 // Set the keyboard to the markup
                 rowsInline.add(rowInline);
