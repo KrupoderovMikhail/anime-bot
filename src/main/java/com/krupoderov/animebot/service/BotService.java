@@ -1,6 +1,8 @@
 package com.krupoderov.animebot.service;
 
 import com.krupoderov.animebot.config.BotConfig;
+import com.krupoderov.animebot.enumeration.Category;
+import com.krupoderov.animebot.enumeration.Type;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,10 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
@@ -29,10 +34,12 @@ public class BotService extends TelegramLongPollingBot {
 
     private final BotConfig botConfig;
     private final ParseService parseService;
+    private final FileService fileService;
 
-    public BotService(BotConfig botConfig, ParseService parseService) {
+    public BotService(BotConfig botConfig, ParseService parseService, FileService fileService) {
         this.botConfig = botConfig;
         this.parseService = parseService;
+        this.fileService = fileService;
     }
 
     //Accepts and processes messages received in private messages or in the channel where the bot administrator is located
@@ -53,12 +60,16 @@ public class BotService extends TelegramLongPollingBot {
                 List<InlineKeyboardButton> rowInline = new ArrayList<>();
                 InlineKeyboardButton sfw = new InlineKeyboardButton();
                 InlineKeyboardButton nsfw = new InlineKeyboardButton();
+                InlineKeyboardButton keyboard = new InlineKeyboardButton();
                 sfw.setText("SFW");
                 sfw.setCallbackData("sfw");
                 nsfw.setText("NSFW");
                 nsfw.setCallbackData("nsfw");
+                keyboard.setText("Keyboard");
+                keyboard.setCallbackData("keyboard");
                 rowInline.add(sfw);
                 rowInline.add(nsfw);
+                rowInline.add(keyboard);
                 // Set the keyboard to the markup
                 rowsInline.add(rowInline);
                 // Add it to the message
@@ -77,6 +88,34 @@ public class BotService extends TelegramLongPollingBot {
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
+            if (call_data.equals("keyboard")) {
+                log.info("keyboard");
+                SendMessage message = new SendMessage(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+
+                replyKeyboardMarkup.setSelective(true); // показывать клавиатуру определенным пользователям
+                replyKeyboardMarkup.setResizeKeyboard(true); // "подгонка" клавиатуры
+                replyKeyboardMarkup.setOneTimeKeyboard(false); // не скрывать клавиатуру
+
+                List<KeyboardRow> keyboardRowList = new ArrayList<>();
+//        List<KeyboardRow> keyboardRowList2 = new ArrayList<>();
+                KeyboardRow keyboardFirstRow = new KeyboardRow(); // Строка клавиатуры (1-я)
+//        KeyboardRow keyboardSecondRow = new KeyboardRow(); // Строка клавиатуры (2-я)
+
+                keyboardFirstRow.add(new KeyboardButton("/start"));
+
+                keyboardRowList.add(keyboardFirstRow); // добавить кнопку в список
+                replyKeyboardMarkup.setKeyboard(keyboardRowList); // добавить лист в массив кнопок
+                message.setReplyMarkup(replyKeyboardMarkup); // связать сообщения с клавиатурой
+
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
             if (call_data.equals("nsfw")) {
                 String answer = "Выберите категорию";
                 EditMessageText new_message = new EditMessageText();
@@ -87,27 +126,32 @@ public class BotService extends TelegramLongPollingBot {
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
                 List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
                 List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                InlineKeyboardButton waifu = new InlineKeyboardButton();
-                InlineKeyboardButton neko = new InlineKeyboardButton();
+                InlineKeyboardButton anal = new InlineKeyboardButton();
+                InlineKeyboardButton dp = new InlineKeyboardButton();
+                InlineKeyboardButton sf = new InlineKeyboardButton();
                 InlineKeyboardButton trap = new InlineKeyboardButton();
-                InlineKeyboardButton blowjob = new InlineKeyboardButton();
+                InlineKeyboardButton vaginal = new InlineKeyboardButton();
 
-                waifu.setText("Waifu");
-                waifu.setCallbackData("nsfw_waifu");
+                anal.setText("Anal");
+                anal.setCallbackData(Type.NSFW.getLabel() + Category.ANAL.getLabel());
 
-                neko.setText("Neko");
-                neko.setCallbackData("nsfw_neko");
+                dp.setText("DP");
+                dp.setCallbackData(Type.NSFW.getLabel() + Category.DP.getLabel());
+
+                sf.setText("SF");
+                sf.setCallbackData(Type.NSFW.getLabel() + Category.SOLO_FEMALE.getLabel());
 
                 trap.setText("Trap");
-                trap.setCallbackData("nsfw_trap");
+                trap.setCallbackData(Type.NSFW.getLabel() + Category.TRAP.getLabel());
 
-                blowjob.setText("Blowjob");
-                blowjob.setCallbackData("nsfw_blowjob");
+                vaginal.setText("Classic");
+                vaginal.setCallbackData(Type.NSFW.getLabel() + Category.VAGINAL.getLabel());
 
-                rowInline.add(waifu);
-                rowInline.add(neko);
+                rowInline.add(anal);
+                rowInline.add(dp);
+                rowInline.add(sf);
                 rowInline.add(trap);
-                rowInline.add(blowjob);
+                rowInline.add(vaginal);
                 // Set the keyboard to the markup
                 rowsInline.add(rowInline);
                 // Add it to the message
@@ -280,36 +324,37 @@ public class BotService extends TelegramLongPollingBot {
                 }
             }
 
-            if (call_data.equals("nsfw_trap")) {
-                SendMessage message = new SendMessage(); // Create a message object object
-                message.setChatId(String.valueOf(chatId));
-                message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("nsfw", "trap").getUrl();
-                message.setText("[Трапик](" + url + ")");
+//            if (call_data.equals("nsfw_trap")) {
+//                SendMessage message = new SendMessage(); // Create a message object object
+//                message.setChatId(String.valueOf(chatId));
+//                message.setParseMode(ParseMode.MARKDOWN);
+//                String url = parseService.getImage("nsfw", "trap").getUrl();
+//                message.setText("[Трапик](" + url + ")");
+//
+//                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+//                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+//                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+//
+//                InlineKeyboardButton trap = new InlineKeyboardButton();
+//
+//                trap.setText("Хочу еще");
+//                trap.setCallbackData("nsfw_trap");
+//
+//                rowInline.add(trap);
+//
+//                // Set the keyboard to the markup
+//                rowsInline.add(rowInline);
+//                // Add it to the message
+//                markupInline.setKeyboard(rowsInline);
+//                message.setReplyMarkup(markupInline);
+//                try {
+//                    execute(message);
+//                } catch (TelegramApiException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                List<InlineKeyboardButton> rowInline = new ArrayList<>();
-
-                InlineKeyboardButton trap = new InlineKeyboardButton();
-
-                trap.setText("Хочу еще");
-                trap.setCallbackData("nsfw_trap");
-
-                rowInline.add(trap);
-
-                // Set the keyboard to the markup
-                rowsInline.add(rowInline);
-                // Add it to the message
-                markupInline.setKeyboard(rowsInline);
-                message.setReplyMarkup(markupInline);
-                try {
-                    execute(message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-
+            /* Blowjob */
             if (call_data.equals("nsfw_blowjob")) {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
@@ -331,6 +376,156 @@ public class BotService extends TelegramLongPollingBot {
                 // Set the keyboard to the markup
                 rowsInline.add(rowInline);
                 // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            /* Traps */
+            if (call_data.equals("nsfw_trap")) {
+                String category = Category.TRAP.getLabel();
+                SendPhoto message = new SendPhoto(); // Create a message object object
+                message.setChatId(String.valueOf(chatId));
+                String image = fileService.getImage(category);
+                message.setPhoto(new InputFile(new File(image)));
+
+                log.info("\nFilename: " + image + "\nCategory: " + category);
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton trap = new InlineKeyboardButton();
+
+                trap.setText("Хочу еще");
+                trap.setCallbackData("nsfw_trap");
+
+                rowInline.add(trap);
+                rowsInline.add(rowInline);
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            /* Anal */
+            if (call_data.equals(Type.NSFW.getLabel() + Category.ANAL.getLabel())) {
+                String category = Category.ANAL.getLabel();
+                SendPhoto message = new SendPhoto();
+                message.setChatId(String.valueOf(chatId));
+                String image = fileService.getImage(category);
+                message.setPhoto(new InputFile(new File(image)));
+
+                log.info("\nFilename: " + image + "\nCategory: " + category);
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton anal = new InlineKeyboardButton();
+
+                anal.setText("Хочу еще");
+                anal.setCallbackData(Type.NSFW.getLabel() + Category.ANAL.getLabel());
+
+                rowInline.add(anal);
+                rowsInline.add(rowInline);
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            /* Double penetration */
+            if (call_data.equals(Type.NSFW.getLabel() + Category.DP.getLabel())) {
+                String category = Category.DP.getLabel();
+                SendPhoto message = new SendPhoto();
+                message.setChatId(String.valueOf(chatId));
+                String image = fileService.getImage(category);
+                message.setPhoto(new InputFile(new File(image)));
+
+                log.info("\nFilename: " + image + "\nCategory: " + category);
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton dp = new InlineKeyboardButton();
+
+                dp.setText("Хочу еще");
+                dp.setCallbackData(Type.NSFW.getLabel() + Category.DP.getLabel());
+
+                rowInline.add(dp);
+                rowsInline.add(rowInline);
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            /* Solo female */
+            if (call_data.equals(Type.NSFW.getLabel() + Category.SOLO_FEMALE.getLabel())) {
+                String category = Category.SOLO_FEMALE.getLabel();
+                SendPhoto message = new SendPhoto();
+                message.setChatId(String.valueOf(chatId));
+                String image = fileService.getImage(category);
+                message.setPhoto(new InputFile(new File(image)));
+
+                log.info("\nFilename: " + image + "\nCategory: " + category);
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton sf = new InlineKeyboardButton();
+
+                sf.setText("Хочу еще");
+                sf.setCallbackData(Type.NSFW.getLabel() + Category.SOLO_FEMALE.getLabel());
+
+                rowInline.add(sf);
+                rowsInline.add(rowInline);
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            /* Vaginal */
+            if (call_data.equals(Type.NSFW.getLabel() + Category.VAGINAL.getLabel())) {
+                String category = Category.VAGINAL.getLabel();
+                SendPhoto message = new SendPhoto();
+                message.setChatId(String.valueOf(chatId));
+                String image = fileService.getImage(category);
+                message.setPhoto(new InputFile(new File(image)));
+
+                log.info("\nFilename: " + image + "\nCategory: " + category);
+
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+
+                InlineKeyboardButton vaginal = new InlineKeyboardButton();
+
+                vaginal.setText("Хочу еще");
+                vaginal.setCallbackData(Type.NSFW.getLabel() + Category.VAGINAL.getLabel());
+
+                rowInline.add(vaginal);
+                rowsInline.add(rowInline);
                 markupInline.setKeyboard(rowsInline);
                 message.setReplyMarkup(markupInline);
                 try {
