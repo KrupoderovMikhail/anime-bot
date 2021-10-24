@@ -20,13 +20,4 @@ public class ParseService {
 
         return response.getBody();
     }
-
-//    public String save(String type, String category) throws IOException {
-//
-//        String url = "https://api.waifu.pics/" + type + "/" + category;
-//        byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
-//        Files.write(Paths.get("image/test.png"), imageBytes);
-//
-//        return "image/test.png";
-//    }
 }

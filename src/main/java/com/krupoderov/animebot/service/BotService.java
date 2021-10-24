@@ -12,10 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
@@ -43,45 +40,10 @@ public class BotService extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
-//
-//            SendMessage sendMessage = new SendMessage();
-//            sendMessage.setChatId(chatId);
-//            sendMessage.setText("Test");
-//            // Create ReplyKeyboardMarkup object
-//            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-//            // Create the keyboard (list of keyboard rows)
-//            List<KeyboardRow> keyboard = new ArrayList<>();
-//            // Create a keyboard row
-//            KeyboardRow row = new KeyboardRow();
-//            // Set each button, you can also use KeyboardButton objects if you need something else than text
-//            row.add("/start");
-//
-//            // Add the first row to the keyboard
-//            keyboard.add(row);
-////            // Create another keyboard row
-////            row = new KeyboardRow();
-////            // Set each button for the second line
-////            row.add("Row 2 Button 1");
-////            row.add("Row 2 Button 2");
-////            row.add("Row 2 Button 3");
-//            // Add the second row to the keyboard
-////            keyboard.add(row);
-//            // Set the keyboard to the markup
-//            keyboardMarkup.setKeyboard(keyboard);
-//            // Add it to the message
-//            sendMessage.setReplyMarkup(keyboardMarkup);
-//            try {
-//                execute(sendMessage); // Sending our message object to user
-//            } catch (TelegramApiException e) {
-//                e.printStackTrace();
-//            }
-
-            /*****************************************************************/
             if (update.getMessage().getText().equals("/start") ||
                     update.getMessage().getText().equals("start") ||
                     update.getMessage().getText().equals("Хочу картинку")
             ) {
-
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(chatId);
                 message.setText("Что выберите сегодня?");
@@ -108,21 +70,6 @@ public class BotService extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
-//            else if (update.getMessage().getText().equals("/hide")) {
-//                SendMessage message = new SendMessage(); // Create a message object object
-//                message.setChatId(chatId);
-//                message.setText("Понял, убираю клавиатуру :)");
-//                ReplyKeyboardRemove keyboardRemove = new ReplyKeyboardRemove();
-//                keyboardRemove.setRemoveKeyboard(true);
-//                keyboardRemove.setSelective(true);
-//                message.setReplyMarkup(keyboardRemove);
-//                try {
-//                    execute(message); // Call method to send the photo
-//                } catch (TelegramApiException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-            /*****************************************************************/
 
         } else if (update.hasCallbackQuery()) {
             // Set variables
@@ -166,7 +113,6 @@ public class BotService extends TelegramLongPollingBot {
                 // Add it to the message
                 markupInline.setKeyboard(rowsInline);
                 new_message.setReplyMarkup(markupInline);
-
 
                 try {
                     execute(new_message);
@@ -265,7 +211,6 @@ public class BotService extends TelegramLongPollingBot {
                 markupInline.setKeyboard(rowsInline);
                 new_message.setReplyMarkup(markupInline);
 
-
                 try {
                     execute(new_message);
                 } catch (TelegramApiException e) {
@@ -303,12 +248,13 @@ public class BotService extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+
             if (call_data.equals("nsfw_neko")) {
                 log.info("Категория: Neko");
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("nsfw","neko").getUrl();
+                String url = parseService.getImage("nsfw", "neko").getUrl();
                 message.setText("[Кошкодевочка](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -333,6 +279,7 @@ public class BotService extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+
             if (call_data.equals("nsfw_trap")) {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
@@ -362,6 +309,7 @@ public class BotService extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+
             if (call_data.equals("nsfw_blowjob")) {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
@@ -426,7 +374,7 @@ public class BotService extends TelegramLongPollingBot {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("sfw","neko").getUrl();
+                String url = parseService.getImage("sfw", "neko").getUrl();
                 message.setText("[Одетая кошкодевочка](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -456,7 +404,7 @@ public class BotService extends TelegramLongPollingBot {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("sfw","shinobu").getUrl();
+                String url = parseService.getImage("sfw", "shinobu").getUrl();
                 message.setText("[Синобутян](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -486,7 +434,7 @@ public class BotService extends TelegramLongPollingBot {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("sfw","megumin").getUrl();
+                String url = parseService.getImage("sfw", "megumin").getUrl();
                 message.setText("[Мегумин](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -516,7 +464,7 @@ public class BotService extends TelegramLongPollingBot {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("sfw","bully").getUrl();
+                String url = parseService.getImage("sfw", "bully").getUrl();
                 message.setText("[Буллинг](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -546,7 +494,7 @@ public class BotService extends TelegramLongPollingBot {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("sfw","cuddle").getUrl();
+                String url = parseService.getImage("sfw", "cuddle").getUrl();
                 message.setText("[:3](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -576,7 +524,7 @@ public class BotService extends TelegramLongPollingBot {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("sfw","cry").getUrl();
+                String url = parseService.getImage("sfw", "cry").getUrl();
                 message.setText("[:(](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -606,7 +554,7 @@ public class BotService extends TelegramLongPollingBot {
                 SendMessage message = new SendMessage(); // Create a message object object
                 message.setChatId(String.valueOf(chatId));
                 message.setParseMode(ParseMode.MARKDOWN);
-                String url = parseService.getImage("sfw","hug").getUrl();
+                String url = parseService.getImage("sfw", "hug").getUrl();
                 message.setText("[Обнимашки:3](" + url + ")");
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
