@@ -289,7 +289,7 @@ public class BotService extends TelegramLongPollingBot {
                 sendImageCategory(chatId, Category.VAGINAL.getLabel(), Type.NSFW.getLabel() + Category.VAGINAL.getLabel());
             }
 
-            /* NSFW */
+            /* SFW */
 
             /* Waifu */
             if (call_data.equals("sfw_waifu")) {
@@ -333,6 +333,7 @@ public class BotService extends TelegramLongPollingBot {
         }
     }
 
+    // Send message by URL
     private void sendMessageByUrl(long chatId, String imageName, String description, String callbackData) {
         SendMessage message = new SendMessage(); // Create a message object object
         message.setChatId(String.valueOf(chatId));
