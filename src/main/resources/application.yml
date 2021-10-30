@@ -1,0 +1,15 @@
+server:
+  port: 8090
+
+bot:
+  configuration:
+    username: @username_bot
+    token: token_bot
+    owner: owner_chat_id
+    admin: admin_chat_id
+
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG

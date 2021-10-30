@@ -7,14 +7,22 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @Data
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.yml")
 public class BotConfig {
 
     //Bot name specified during registration
-    @Value("${botUserName}")
+    @Value("${bot.configuration.username}")
     String botUserName;
 
     //Bot token received during registration
-    @Value("${token}")
+    @Value("${bot.configuration.token}")
     String token;
+
+    //Chat id of the administrator, we get on the command /getChatId
+    @Value("${bot.configuration.admin}")
+    String adminId;
+
+    //Chat id of the owner, we get on the command /getChatId
+    @Value("${bot.configuration.owner}")
+    public String ownerId;
 }
