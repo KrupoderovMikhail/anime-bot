@@ -1,9 +1,10 @@
 package com.krupoderov.animebot.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,12 +14,15 @@ import java.util.stream.Stream;
 @Service
 public class FileService extends Random {
 
+    @Value("${file.path.images}")
+    private String imagesPath;
+
     ArrayList<Integer> list = new ArrayList<>();
 
     LinkedList<Integer> l = new LinkedList<>();
 
     public List<String> getNames(String category) {
-        File folder = new File("images/" + category);
+        File folder = new File(imagesPath + "/" + category);
         File[] listOfFiles = folder.listFiles();
 
         List<String> names = new ArrayList<>();
@@ -43,15 +47,17 @@ public class FileService extends Random {
         return result;
     }
 
-    public String getImage(String category) {
+    public String getImage(String category) throws IOException {
         List<String> names = getNames(category);
+        int random = getRandom(category);
+        writeToFile(random, category);
 
-        return "images/" + category + "/" + names.get(getRandom(category));
+        return imagesPath + "/" + category + "/" + names.get(random);
     }
 
-        public int count(String category) {
+    public int count(String category) {
         int count = 0;
-        try (Stream<Path> files = Files.list(Paths.get("images/" + category))) {
+        try (Stream<Path> files = Files.list(Paths.get(imagesPath + "/" + category))) {
             count = (int) files.count();
         } catch (IOException e) {
             e.printStackTrace();

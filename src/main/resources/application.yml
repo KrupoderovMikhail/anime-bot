@@ -8,6 +8,11 @@ bot:
     owner: owner_chat_id
     admin: admin_chat_id
 
+file:
+  path:
+    archive: temp
+    images: images
+
 logging:
   level:
     org:

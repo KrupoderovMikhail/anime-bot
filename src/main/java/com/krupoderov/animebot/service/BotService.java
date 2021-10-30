@@ -6,6 +6,7 @@ import com.krupoderov.animebot.enumeration.Category;
 import com.krupoderov.animebot.enumeration.Type;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
@@ -43,6 +44,9 @@ public class BotService extends TelegramLongPollingBot {
         this.fileService = fileService;
         this.archiveService = archiveService;
     }
+
+    @Value("${file.path.archive}")
+    private String archivePath;
 
     //Accepts and processes messages received in private messages or in the channel where the bot administrator is located
     @SneakyThrows
@@ -309,7 +313,7 @@ public class BotService extends TelegramLongPollingBot {
         if (fileTelegram != null) {
             try {
                 File file = downloadFile(fileTelegram);
-                String path = "temp/" + update.getMessage().getDocument().getFileName();
+                String path = archivePath + "/" + update.getMessage().getDocument().getFileName();
                 Files.copy(file, new File(path));
                 archiveService.unzip(path, "image");
 
