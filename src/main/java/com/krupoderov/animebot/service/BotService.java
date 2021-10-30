@@ -1,5 +1,6 @@
 package com.krupoderov.animebot.service;
 
+import com.google.common.io.Files;
 import com.krupoderov.animebot.config.BotConfig;
 import com.krupoderov.animebot.enumeration.Category;
 import com.krupoderov.animebot.enumeration.Type;
@@ -7,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -18,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,52 +35,34 @@ public class BotService extends TelegramLongPollingBot {
     private final BotConfig botConfig;
     private final ParseService parseService;
     private final FileService fileService;
+    private final ArchiveService archiveService;
 
-    public BotService(BotConfig botConfig, ParseService parseService, FileService fileService) {
+    public BotService(BotConfig botConfig, ParseService parseService, FileService fileService, ArchiveService archiveService) {
         this.botConfig = botConfig;
         this.parseService = parseService;
         this.fileService = fileService;
+        this.archiveService = archiveService;
     }
 
     //Accepts and processes messages received in private messages or in the channel where the bot administrator is located
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            String chatId = update.getMessage().getChatId().toString();
+            long chatId = update.getMessage().getChatId();
             if (update.getMessage().getText().equals("/start") ||
                     update.getMessage().getText().equals("start") ||
                     update.getMessage().getText().equals("Хочу картинку")
             ) {
-                SendMessage message = new SendMessage(); // Create a message object object
-                message.setChatId(chatId);
-                message.setText("Что выберите сегодня?");
-
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                InlineKeyboardButton sfw = new InlineKeyboardButton();
-                InlineKeyboardButton nsfw = new InlineKeyboardButton();
-                InlineKeyboardButton keyboard = new InlineKeyboardButton();
-                sfw.setText("SFW");
-                sfw.setCallbackData("sfw");
-                nsfw.setText("NSFW");
-                nsfw.setCallbackData("nsfw");
-                keyboard.setText("About");
-                keyboard.setCallbackData("about");
-                rowInline.add(sfw);
-                rowInline.add(nsfw);
-                rowInline.add(keyboard);
-                // Set the keyboard to the markup
-                rowsInline.add(rowInline);
-                // Add it to the message
-                markupInline.setKeyboard(rowsInline);
-                message.setReplyMarkup(markupInline);
-                try {
-                    execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                startMessage(chatId);
+            } else if (update.getMessage().getText().equals("/getChatId")) {
+                sendMessage(chatId, "Твой chatId: " + chatId);
             }
+
+        } else if (update.hasMessage() && update.getMessage().hasDocument() &&
+                update.getMessage().getChatId().toString().equals(botConfig.getOwnerId()) |
+                        update.getMessage().getChatId().toString().equals(botConfig.getAdminId())
+        ) {
+            saveFileFromMessage(update);
 
         } else if (update.hasCallbackQuery()) {
             // Set variables
@@ -85,9 +70,10 @@ public class BotService extends TelegramLongPollingBot {
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-            if (call_data.equals("about")) {
-                log.info("About");
-                sendImage(chatId, "about");
+            if (call_data.equals("menu")) {
+                log.info("Menu");
+                log.info("callback: " + call_data);
+                startMessage(chatId);
             }
 
             if (call_data.equals("nsfw")) {
@@ -304,6 +290,66 @@ public class BotService extends TelegramLongPollingBot {
             if (call_data.equals("sfw_hug")) {
                 sendMessageByUrl(chatId, "hug", "[Обнимашки:3](", "sfw_hug");
             }
+        }
+    }
+
+    private void saveFileFromMessage(Update update) {
+        long chatId = update.getMessage().getChatId();
+        GetFile fileRequest = new GetFile();
+        org.telegram.telegrambots.meta.api.objects.File fileTelegram = null;
+        try {
+            fileRequest.setFileId(update.getMessage().getDocument().getFileId());
+            log.info(update.getMessage().getDocument().getFileName());
+            fileTelegram = execute(fileRequest);
+        } catch (Exception e) {
+            sendMessage(chatId, "Размер архива не должен превышать 20 мб");
+            log.error("saveFileFromMessage", e);
+        }
+
+        if (fileTelegram != null) {
+            try {
+                File file = downloadFile(fileTelegram);
+                String path = "temp/" + update.getMessage().getDocument().getFileName();
+                Files.copy(file, new File(path));
+                archiveService.unzip(path, "image");
+
+            } catch (TelegramApiException | IOException e) {
+                sendMessage(chatId, "Ошибка при загрузке файла");
+                log.error("saveFileFromMessage", e);
+            }
+            sendMessage(chatId, "Архив " + update.getMessage().getDocument().getFileName() + " Успешно загружен.");
+        }
+    }
+
+    private void startMessage(long chatId) {
+        SendMessage message = new SendMessage(); // Create a message object object
+        message.setChatId(String.valueOf(chatId));
+        message.setText("Что выберите сегодня?");
+
+        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+        InlineKeyboardButton sfw = new InlineKeyboardButton();
+        InlineKeyboardButton nsfw = new InlineKeyboardButton();
+        InlineKeyboardButton keyboard = new InlineKeyboardButton();
+        sfw.setText("SFW");
+        sfw.setCallbackData("sfw");
+        nsfw.setText("NSFW");
+        nsfw.setCallbackData("nsfw");
+//        keyboard.setText("About");
+//        keyboard.setCallbackData("about");
+        rowInline.add(sfw);
+        rowInline.add(nsfw);
+//        rowInline.add(keyboard);
+        // Set the keyboard to the markup
+        rowsInline.add(rowInline);
+        // Add it to the message
+        markupInline.setKeyboard(rowsInline);
+        message.setReplyMarkup(markupInline);
+        try {
+            execute(message); // Sending our message object to user
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
