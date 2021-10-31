@@ -2,8 +2,7 @@ package com.krupoderov.animebot.service;
 
 import com.google.common.io.Files;
 import com.krupoderov.animebot.config.BotConfig;
-import com.krupoderov.animebot.enumeration.Category;
-import com.krupoderov.animebot.enumeration.Type;
+import com.krupoderov.animebot.enumeration.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +47,9 @@ public class BotService extends TelegramLongPollingBot {
     @Value("${file.path.archive}")
     private String archivePath;
 
+    @Value("${file.path.images}")
+    private String imagesPath;
+
     //Accepts and processes messages received in private messages or in the channel where the bot administrator is located
     @SneakyThrows
     public void onUpdateReceived(Update update) {
@@ -70,21 +72,21 @@ public class BotService extends TelegramLongPollingBot {
 
         } else if (update.hasCallbackQuery()) {
             // Set variables
-            String call_data = update.getCallbackQuery().getData();
-            long message_id = update.getCallbackQuery().getMessage().getMessageId();
+            String callbackData = update.getCallbackQuery().getData();
+            long messageId = update.getCallbackQuery().getMessage().getMessageId();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
 
-            if (call_data.equals("menu")) {
+            if (callbackData.equals("menu")) {
                 log.info("Menu");
-                log.info("callback: " + call_data);
+                log.info("callback: " + callbackData);
                 startMessage(chatId);
             }
 
-            if (call_data.equals("nsfw")) {
+            if (callbackData.equals("nsfw")) {
                 String answer = "Выберите категорию";
                 EditMessageText new_message = new EditMessageText();
                 new_message.setChatId(chatId);
-                new_message.setMessageId(toIntExact(message_id));
+                new_message.setMessageId(toIntExact(messageId));
                 new_message.setText(answer);
 
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
@@ -116,102 +118,6 @@ public class BotService extends TelegramLongPollingBot {
                 rowInline.add(sf);
                 rowInline.add(trap);
                 rowInline.add(vaginal);
-                // Set the keyboard to the markup
-                rowsInline.add(rowInline);
-                // Add it to the message
-                markupInline.setKeyboard(rowsInline);
-                new_message.setReplyMarkup(markupInline);
-
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (call_data.equals("sfw")) {
-                String answer = "Выберите категорию";
-                EditMessageText new_message = new EditMessageText();
-                new_message.setChatId(chatId);
-                new_message.setMessageId(toIntExact(message_id));
-                new_message.setText(answer);
-
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                List<InlineKeyboardButton> rowInline = new ArrayList<>();
-
-                // waifu neko shinobu megumin
-                InlineKeyboardButton waifu = new InlineKeyboardButton();
-                InlineKeyboardButton neko = new InlineKeyboardButton();
-                InlineKeyboardButton shinobu = new InlineKeyboardButton();
-                InlineKeyboardButton megumin = new InlineKeyboardButton();
-                InlineKeyboardButton next1 = new InlineKeyboardButton();
-
-                waifu.setText("Waifu");
-                waifu.setCallbackData("sfw_waifu");
-                neko.setText("Neko");
-                neko.setCallbackData("sfw_neko");
-                shinobu.setText("Shinobu");
-                shinobu.setCallbackData("sfw_shinobu");
-                megumin.setText("Megumin");
-                megumin.setCallbackData("sfw_megumin");
-
-                next1.setText("Next >");
-                next1.setCallbackData("sfw_next1");
-
-                rowInline.add(waifu);
-                rowInline.add(neko);
-                rowInline.add(shinobu);
-                rowInline.add(megumin);
-                rowInline.add(next1);
-
-                // Set the keyboard to the markup
-                rowsInline.add(rowInline);
-                // Add it to the message
-                markupInline.setKeyboard(rowsInline);
-                new_message.setReplyMarkup(markupInline);
-
-
-                try {
-                    execute(new_message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (call_data.equals("sfw_next1")) {
-                String answer = "Выберите категорию";
-                EditMessageText new_message = new EditMessageText();
-                new_message.setChatId(chatId);
-                new_message.setMessageId(toIntExact(message_id));
-                new_message.setText(answer);
-
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                // bully cuddle cry hug
-                InlineKeyboardButton bully = new InlineKeyboardButton();
-                InlineKeyboardButton cuddle = new InlineKeyboardButton();
-                InlineKeyboardButton cry = new InlineKeyboardButton();
-                InlineKeyboardButton hug = new InlineKeyboardButton();
-                InlineKeyboardButton next2 = new InlineKeyboardButton();
-
-                bully.setText("Bully");
-                bully.setCallbackData("sfw_bully");
-                cuddle.setText("Cuddle");
-                cuddle.setCallbackData("sfw_cuddle");
-                cry.setText("Cry");
-                cry.setCallbackData("sfw_cry");
-                hug.setText("Hug");
-                hug.setCallbackData("sfw_hug");
-                next2.setText("Next >");
-                next2.setCallbackData("sfw_next2");
-
-                rowInline.add(bully);
-                rowInline.add(cuddle);
-                rowInline.add(cry);
-                rowInline.add(hug);
-                rowInline.add(next2);
 
                 // Set the keyboard to the markup
                 rowsInline.add(rowInline);
@@ -229,69 +135,69 @@ public class BotService extends TelegramLongPollingBot {
             /* NSFW */
 
             /* Traps */
-            if (call_data.equals(Type.NSFW.getLabel() + Category.TRAP.getLabel())) {
-                sendImage(chatId, Category.TRAP.getLabel(), Type.NSFW.getLabel() + Category.TRAP.getLabel());
+            if (callbackData.equals(Type.NSFW.getLabel() + Category.TRAP.getLabel())) {
+                sendImage(chatId, Category.TRAP.getLabel(), "Хочу еще", "Menu", Type.NSFW.getLabel() + Category.TRAP.getLabel(), Command.MENU.getLabel());
             }
 
             /* Anal */
-            if (call_data.equals(Type.NSFW.getLabel() + Category.ANAL.getLabel())) {
-                sendImage(chatId, Category.ANAL.getLabel(), Type.NSFW.getLabel() + Category.ANAL.getLabel());
+            if (callbackData.equals(Type.NSFW.getLabel() + Category.ANAL.getLabel())) {
+                sendImage(chatId, Category.ANAL.getLabel(), "Хочу еще", "Menu", Type.NSFW.getLabel() + Category.ANAL.getLabel(), Command.MENU.getLabel());
             }
 
             /* Double penetration */
-            if (call_data.equals(Type.NSFW.getLabel() + Category.DP.getLabel())) {
-                sendImage(chatId, Category.DP.getLabel(), Type.NSFW.getLabel() + Category.DP.getLabel());
+            if (callbackData.equals(Type.NSFW.getLabel() + Category.DP.getLabel())) {
+                sendImage(chatId, Category.DP.getLabel(), "Хочу еще", "Menu", Type.NSFW.getLabel() + Category.DP.getLabel(), Command.MENU.getLabel());
             }
 
             /* Solo female */
-            if (call_data.equals(Type.NSFW.getLabel() + Category.SOLO_FEMALE.getLabel())) {
-                sendImage(chatId, Category.SOLO_FEMALE.getLabel(), Type.NSFW.getLabel() + Category.SOLO_FEMALE.getLabel());
+            if (callbackData.equals(Type.NSFW.getLabel() + Category.SOLO_FEMALE.getLabel())) {
+                sendImage(chatId, Category.SOLO_FEMALE.getLabel(), "Хочу еще", "Menu", Type.NSFW.getLabel() + Category.SOLO_FEMALE.getLabel(), Command.MENU.getLabel());
             }
 
             /* Vaginal */
-            if (call_data.equals(Type.NSFW.getLabel() + Category.VAGINAL.getLabel())) {
-                sendImage(chatId, Category.VAGINAL.getLabel(), Type.NSFW.getLabel() + Category.VAGINAL.getLabel());
+            if (callbackData.equals(Type.NSFW.getLabel() + Category.VAGINAL.getLabel())) {
+                sendImage(chatId, Category.VAGINAL.getLabel(), "Хочу еще", "Menu", Type.NSFW.getLabel() + Category.VAGINAL.getLabel(), Command.MENU.getLabel());
             }
 
             /* SFW */
 
             /* Waifu */
-            if (call_data.equals("sfw_waifu")) {
+            if (callbackData.equals("sfw_waifu")) {
                 sendMessageByUrl(chatId, "waifu", "[Одетая вайфу](", "sfw_waifu");
             }
 
             /* Neko */
-            if (call_data.equals("sfw_neko")) {
+            if (callbackData.equals("sfw_neko")) {
                 sendMessageByUrl(chatId, "neko", "[Одетая кошкодевочка](", "sfw_neko");
             }
 
             /* Shinobu */
-            if (call_data.equals("sfw_shinobu")) {
+            if (callbackData.equals("sfw_shinobu")) {
                 sendMessageByUrl(chatId, "shinobu", "[Синобутян](", "sfw_shinobu");
             }
 
             /* Megumin */
-            if (call_data.equals("sfw_megumin")) {
+            if (callbackData.equals("sfw_megumin")) {
                 sendMessageByUrl(chatId, "megumin", "[Мегумин](", "sfw_megumin");
             }
 
             /* Bully */
-            if (call_data.equals("sfw_bully")) {
+            if (callbackData.equals("sfw_bully")) {
                 sendMessageByUrl(chatId, "bully", "[Буллинг](", "sfw_bully");
             }
 
             /* Cuddle */
-            if (call_data.equals("sfw_cuddle")) {
+            if (callbackData.equals("sfw_cuddle")) {
                 sendMessageByUrl(chatId, "cuddle", "[:3](", "sfw_cuddle");
             }
 
             /* Cry */
-            if (call_data.equals("sfw_cry")) {
+            if (callbackData.equals("sfw_cry")) {
                 sendMessageByUrl(chatId, "cry", "[:(](", "sfw_cry");
             }
 
             /* Hug */
-            if (call_data.equals("sfw_hug")) {
+            if (callbackData.equals("sfw_hug")) {
                 sendMessageByUrl(chatId, "hug", "[Обнимашки:3](", "sfw_hug");
             }
         }
