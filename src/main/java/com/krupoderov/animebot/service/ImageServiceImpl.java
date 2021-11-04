@@ -12,10 +12,10 @@ import java.io.IOException;
 @Slf4j
 public class ImageServiceImpl implements ImageService {
 
-    private final FileServiceImpl fileService;
+    private final FileService fileService;
     private final ButtonService buttonService;
 
-    public ImageServiceImpl(FileServiceImpl fileService, ButtonService buttonService) {
+    public ImageServiceImpl(FileService fileService, ButtonService buttonService) {
         this.fileService = fileService;
         this.buttonService = buttonService;
     }

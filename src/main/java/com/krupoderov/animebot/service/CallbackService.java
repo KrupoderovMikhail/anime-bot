@@ -8,9 +8,9 @@ import java.io.IOException;
 
 public interface CallbackService {
 
-    public SendMessage getMessage(String callback, long chatId);
+    SendMessage getMessage(String callback, long chatId);
 
-    public EditMessageText getEditMessage(String callback, long chatId, int messageId);
+    EditMessageText getEditMessage(String callback, long chatId, int messageId);
 
-    public SendPhoto getPhoto(String callback, long chatId) throws IOException;
+    SendPhoto getPhoto(String callback, long chatId) throws IOException;
 }

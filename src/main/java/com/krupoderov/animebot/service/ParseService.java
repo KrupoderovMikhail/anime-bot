@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface ParseService {
 
-    public Image getImage(String type, String category);
+    Image getImage(String type, String category);
 
-    public void test() throws IOException;
+    void test() throws IOException;
 }
