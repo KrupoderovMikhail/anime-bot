@@ -1,6 +1,6 @@
 package com.krupoderov.animebot.config;
 
-import com.krupoderov.animebot.service.BotService;
+import com.krupoderov.animebot.service.bot.BotService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;

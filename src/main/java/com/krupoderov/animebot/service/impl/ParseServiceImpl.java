@@ -1,6 +1,7 @@
-package com.krupoderov.animebot.service;
+package com.krupoderov.animebot.service.impl;
 
 import com.krupoderov.animebot.model.Image;
+import com.krupoderov.animebot.service.ParseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

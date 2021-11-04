@@ -1,6 +1,9 @@
-package com.krupoderov.animebot.service;
+package com.krupoderov.animebot.service.impl;
 
 import com.krupoderov.animebot.enumeration.*;
+import com.krupoderov.animebot.service.CallbackService;
+import com.krupoderov.animebot.service.ImageService;
+import com.krupoderov.animebot.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

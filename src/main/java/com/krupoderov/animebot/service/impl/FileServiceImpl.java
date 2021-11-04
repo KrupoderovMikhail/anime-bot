@@ -1,5 +1,6 @@
-package com.krupoderov.animebot.service;
+package com.krupoderov.animebot.service.impl;
 
+import com.krupoderov.animebot.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

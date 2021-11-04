@@ -1,5 +1,6 @@
-package com.krupoderov.animebot.service;
+package com.krupoderov.animebot.service.impl;
 
+import com.krupoderov.animebot.service.ArchiveService;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;

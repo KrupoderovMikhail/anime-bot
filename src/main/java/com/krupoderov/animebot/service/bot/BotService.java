@@ -1,7 +1,10 @@
-package com.krupoderov.animebot.service;
+package com.krupoderov.animebot.service.bot;
 
 import com.google.common.io.Files;
 import com.krupoderov.animebot.config.BotConfig;
+import com.krupoderov.animebot.service.ArchiveService;
+import com.krupoderov.animebot.service.CallbackService;
+import com.krupoderov.animebot.service.MessageService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,7 +1,10 @@
-package com.krupoderov.animebot.service;
+package com.krupoderov.animebot.service.impl;
 
 import com.krupoderov.animebot.enumeration.Category;
 import com.krupoderov.animebot.enumeration.Type;
+import com.krupoderov.animebot.service.ButtonService;
+import com.krupoderov.animebot.service.MessageService;
+import com.krupoderov.animebot.service.ParseService;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
